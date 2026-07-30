@@ -19,6 +19,23 @@ use App\Http\Controllers\Api\V1\Discover\ActivityController;
 use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\MapLocationController;
 
+// ── Root API Index & Health status ──────────────────────────────────────────
+Route::get('/', function () {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'BeyondTrails API v1 is online and operational',
+        'version' => '1.0.0',
+        'endpoints' => [
+            'destinations' => url('/api/v1/discover/destinations'),
+            'activities' => url('/api/v1/discover/activities'),
+            'gems' => url('/api/v1/discover/gems'),
+            'operators' => url('/api/v1/discover/operators'),
+            'routes' => url('/api/v1/discover/routes'),
+            'auth' => url('/api/v1/auth/login'),
+        ],
+    ]);
+});
+
 // ── Public media proxy (no auth) — serves stored files with CORS headers ──────
 // This bypasses PHP's static-file serving which strips Laravel CORS middleware.
 Route::get('v1/media/{path}', [MediaController::class, 'serve'])
