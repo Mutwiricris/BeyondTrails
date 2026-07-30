@@ -1,5 +1,8 @@
 # Multi-stage Dockerfile for BeyondTrails Laravel & Filament Panel on Railway
-FROM php:8.2-fpm-alpine
+FROM php:8.3-fpm-alpine
+
+# Set environment variables for Composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install system dependencies, PHP extension build tools, Node.js & NPM
 RUN apk add --no-cache \
@@ -50,8 +53,8 @@ RUN mkdir -p /app/storage /app/bootstrap/cache /app/database /app/public/storage
 RUN npm install --no-audit --no-fund \
  && npm run build || true
 
-# Install Composer dependencies (optimizing autoloader for production)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-sodium
+# Install Composer dependencies (ignoring platform reqs for smooth Docker build)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Copy Docker configuration files
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
