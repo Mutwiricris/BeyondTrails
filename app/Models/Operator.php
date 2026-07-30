@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Operator extends Model
 {
     use HasUuids;
 
     protected $fillable = [
-        'slug', 'name', 'tagline', 'description',
+        'user_id', 'slug', 'name', 'tagline', 'description',
         'logo_url', 'cover_image_url', 'gallery',
         'email', 'phone', 'website', 'address', 'city', 'country',
         'business_type', 'specializations', 'certifications',
@@ -41,6 +42,16 @@ class Operator extends Model
     public function destinations(): HasMany
     {
         return $this->hasMany(Destination::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 
     public function hiddenGems(): HasMany

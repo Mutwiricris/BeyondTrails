@@ -67,6 +67,11 @@ class Destination extends Model
         return $this->belongsTo(Operator::class);
     }
 
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function locationNode(): BelongsTo
     {
         return $this->belongsTo(LocationNode::class);

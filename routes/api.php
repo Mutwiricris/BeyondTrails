@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\V1\Discover\GeofenceController;
 use App\Http\Controllers\Api\V1\Discover\ActivityController;
 use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\MapLocationController;
+use App\Http\Controllers\Api\V1\BookingController;
+use App\Http\Controllers\Api\V1\Discover\OperatorBookingController;
 
 // ── Root API Index & Health status ──────────────────────────────────────────
 Route::get('/', function () {
@@ -181,6 +183,21 @@ Route::prefix('v1')->group(function () {
             Route::get('/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'show'])->name('chat.show');
             Route::post('/{user_id}', [\App\Http\Controllers\Api\V1\ChatController::class, 'store'])->name('chat.store');
         });
+
+        // ── Booking Routes (User) ────────────────────────────────────────────
+        Route::prefix('bookings')->group(function () {
+            Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
+            Route::post('/', [BookingController::class, 'store'])->name('bookings.store');
+            Route::get('/{id}', [BookingController::class, 'show'])->name('bookings.show');
+            Route::delete('/{id}', [BookingController::class, 'cancel'])->name('bookings.cancel');
+        });
+
+        // ── Operator Booking Management Routes ───────────────────────────────
+        Route::prefix('operator')->group(function () {
+            Route::get('/bookings', [OperatorBookingController::class, 'index'])->name('operator.bookings.index');
+            Route::patch('/bookings/{id}/confirm', [OperatorBookingController::class, 'confirm'])->name('operator.bookings.confirm');
+            Route::patch('/bookings/{id}/reject', [OperatorBookingController::class, 'reject'])->name('operator.bookings.reject');
+        });
     });
 
     /*
@@ -244,6 +261,7 @@ Route::prefix('v1')->group(function () {
                     ->latest()->paginate(20);
                 return response()->json(['success' => true, 'data' => $reviews]);
             })->name('discover.destinations.reviews');
+            Route::get('/{id}/availability', [BookingController::class, 'checkAvailability'])->name('discover.destinations.availability');
         });
 
         // ── Hidden Gems ───────────────────────────────────────────────────────
