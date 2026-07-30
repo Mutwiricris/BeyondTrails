@@ -45,6 +45,11 @@ class DiscoverRoute extends Model
         return $this->hasMany(RouteSegment::class, 'route_id')->orderBy('sort_order');
     }
 
+    public function routeSegments(): HasMany
+    {
+        return $this->segments();
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'reviewable_id')

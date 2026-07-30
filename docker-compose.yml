@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_NAME=BeyondTrails
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:3p8V9z4G7H+X+bQ1JmKnOpQrStUvWxYz1234567890A=
+      - APP_URL=http://localhost:8080
+      - DB_CONNECTION=sqlite
+      - CACHE_STORE=redis
+      - QUEUE_CONNECTION=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./storage:/app/storage
+      - ./database:/app/database
+    depends_on:
+      - redis
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php artisan queue:work redis --tries=3 --timeout=90 --verbose
+    environment:
+      - APP_NAME=BeyondTrails
+      - APP_ENV=local
+      - APP_KEY=base64:3p8V9z4G7H+X+bQ1JmKnOpQrStUvWxYz1234567890A=
+      - DB_CONNECTION=sqlite
+      - QUEUE_CONNECTION=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./storage:/app/storage
+      - ./database:/app/database
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

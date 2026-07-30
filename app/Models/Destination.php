@@ -77,6 +77,11 @@ class Destination extends Model
         return $this->hasMany(DestinationItinerary::class)->orderBy('day_number');
     }
 
+    public function itineraries(): HasMany
+    {
+        return $this->itinerary();
+    }
+
     public function accommodations(): HasMany
     {
         return $this->hasMany(DestinationAccommodation::class);
