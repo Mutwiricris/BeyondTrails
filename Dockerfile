@@ -45,8 +45,8 @@ WORKDIR /app
 # Copy application files
 COPY . /app
 
-# Set correct storage & cache permissions
-RUN mkdir -p /app/storage /app/bootstrap/cache /app/database /app/public/storage \
+# Set correct storage, log & cache permissions
+RUN mkdir -p /app/storage /app/bootstrap/cache /app/database /app/public/storage /var/log/supervisor /var/log/nginx /var/run/nginx \
  && chmod -R 777 /app/storage /app/bootstrap/cache /app/database /app/public
 
 # Install Node dependencies and compile production frontend assets

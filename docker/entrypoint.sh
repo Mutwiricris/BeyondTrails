@@ -1,15 +1,19 @@
 #!/bin/sh
 set -e
 
-# Update Nginx port if PORT environment variable is set by Railway
-if [ -n "$PORT" ]; then
-    sed -i "s/listen 8080;/listen ${PORT};/g" /etc/nginx/nginx.conf
-    sed -i "s/listen \[::\]:8080;/listen \[::\]:${PORT};/g" /etc/nginx/nginx.conf
-fi
+# Ensure required log and runtime directories exist
+mkdir -p /var/log/supervisor /var/log/nginx /var/run/nginx /run/nginx
+
+# Remove Alpine default Nginx configurations that interfere with custom server block
+rm -rf /etc/nginx/http.d/* /etc/nginx/conf.d/* || true
+
+# Update Nginx port if PORT environment variable is set by Railway (defaulting to 8080)
+PORT="${PORT:-8080}"
+sed -i "s/8080/${PORT}/g" /etc/nginx/nginx.conf
 
 # Generate temporary APP_KEY if not set in Railway environment variables
 if [ -z "$APP_KEY" ]; then
-    echo "No APP_KEY found, generating default runtime key..."
+    echo "No APP_KEY found, generating runtime application key..."
     export APP_KEY=$(php artisan key:generate --show)
 fi
 
