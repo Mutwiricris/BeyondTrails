@@ -218,7 +218,7 @@ class DiscoverSeeder extends Seeder
             Operator::updateOrCreate(['slug' => $data['slug']], $data);
         }
 
-        $this->command->info('✅ Operators seeded: ' . count($operators));
+        $this->command?->info('✅ Operators seeded: ' . count($operators));
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -502,7 +502,7 @@ class DiscoverSeeder extends Seeder
             $this->seedDestinationAccommodations($destination);
         }
 
-        $this->command->info('✅ Destinations seeded: ' . count($destinations));
+        $this->command?->info('✅ Destinations seeded: ' . count($destinations));
     }
 
     private function seedDestinationItinerary($destination): void
@@ -858,7 +858,7 @@ class DiscoverSeeder extends Seeder
             $this->seedGemTips($gem);
         }
 
-        $this->command->info('✅ Hidden Gems seeded: ' . count($gems));
+        $this->command?->info('✅ Hidden Gems seeded: ' . count($gems));
     }
 
     private function seedGemNearby($gem): void
@@ -1008,7 +1008,7 @@ class DiscoverSeeder extends Seeder
             $this->seedRouteSegments($route);
         }
 
-        $this->command->info('✅ Routes seeded: ' . count($routes));
+        $this->command?->info('✅ Routes seeded: ' . count($routes));
     }
 
     private function seedRouteSegments($route): void
