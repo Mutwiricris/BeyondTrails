@@ -9,7 +9,8 @@ rm -rf /etc/nginx/http.d/* /etc/nginx/conf.d/* || true
 
 # Update Nginx port if PORT environment variable is set by Railway (defaulting to 8080)
 PORT="${PORT:-8080}"
-sed -i "s/8080/${PORT}/g" /etc/nginx/nginx.conf
+echo "Binding Nginx to port ${PORT}..."
+sed -i "s/listen 8080 default_server;/listen ${PORT} default_server;/g" /etc/nginx/nginx.conf
 
 # Generate temporary APP_KEY if not set in Railway environment variables
 if [ -z "$APP_KEY" ]; then
@@ -26,7 +27,7 @@ fi
 
 # Ensure storage & cache directory permissions
 mkdir -p /app/storage/app/public /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/bootstrap/cache
-chmod -R 777 /app/storage /app/bootstrap/cache
+chmod -R 777 /app/storage /app/bootstrap/cache /app/database
 
 # Create storage symlink for uploaded media and avatars
 php artisan storage:link --force || true
