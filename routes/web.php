@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/up', function () {
+    return response('OK', 200);
+});
+
 Route::options('/storage/{path}', function () {
     return response('', 200, [
         'Access-Control-Allow-Origin' => '*',

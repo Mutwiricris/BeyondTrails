@@ -7,6 +7,12 @@ if [ -n "$PORT" ]; then
     sed -i "s/listen \[::\]:8080;/listen \[::\]:${PORT};/g" /etc/nginx/nginx.conf
 fi
 
+# Generate temporary APP_KEY if not set in Railway environment variables
+if [ -z "$APP_KEY" ]; then
+    echo "No APP_KEY found, generating default runtime key..."
+    export APP_KEY=$(php artisan key:generate --show)
+fi
+
 # Ensure SQLite database exists if using SQLite
 if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
     mkdir -p /app/database
@@ -23,6 +29,11 @@ php artisan storage:link --force || true
 
 # Run database migrations
 php artisan migrate --force || true
+
+# Clear cached config so dynamic runtime env vars are read cleanly
+php artisan config:clear || true
+php artisan route:clear || true
+php artisan view:clear || true
 
 # Run Laravel & Filament optimizations for production panel caching
 php artisan config:cache || true
