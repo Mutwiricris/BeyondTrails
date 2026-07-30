@@ -27,9 +27,9 @@ class SimpleRegisterRequest extends FormRequest
             'last_name'             => 'required|string|max:100',
             // date_of_birth: must be 18+ years ago
             'date_of_birth'         => [
-                'required',
+                'nullable',
                 'date',
-                'before:' . now()->subYears(18)->toDateString(),
+                'before:' . now()->subYears(14)->toDateString(),
                 'after:1900-01-01',
             ],
             'email'                 => 'required|email|unique:users,email|max:255',

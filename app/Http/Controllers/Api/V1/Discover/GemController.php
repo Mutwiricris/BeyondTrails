@@ -88,7 +88,9 @@ class GemController extends Controller
                 'nearbyAttractions',
                 'tips',
             ])
-            ->where('slug', $slug)
+            ->where(function($q) use ($slug) {
+                $q->where('slug', $slug)->orWhere('id', $slug);
+            })
             ->where('is_published', true)
             ->firstOrFail();
 
@@ -111,7 +113,7 @@ class GemController extends Controller
     // ──────────────────────────────────────────────────────────────────────────
     public function weather(string $id): JsonResponse
     {
-        $gem = HiddenGem::findOrFail($id);
+        $gem = HiddenGem::where('id', $id)->orWhere('slug', $id)->firstOrFail();
 
         if (!$gem->latitude || !$gem->longitude) {
             return response()->json([

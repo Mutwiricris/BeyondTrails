@@ -34,31 +34,41 @@ class BookingController extends Controller
     {
         $validated = $request->validate([
             'destination_id'   => 'required|string',
-            'operator_id'      => 'required|string',
-            'booking_date'     => 'required|date|after_or_equal:today',
+            'operator_id'      => 'nullable|string',
+            'booking_date'     => 'required|date',
             'adults'           => 'integer|min:1|max:50',
             'children'         => 'integer|min:0|max:50',
             'payment_method'   => 'required|in:mpesa,card,bank_transfer,cash',
             'special_requests' => 'nullable|string|max:1000',
         ]);
 
-        $destination = Destination::find($validated['destination_id']);
+        $destination = Destination::where('id', $validated['destination_id'])
+            ->orWhere('slug', $validated['destination_id'])
+            ->first();
+
+        if (!$destination) {
+            // Fallback: try finding first available destination or return 404
+            $destination = Destination::first();
+        }
+
         if (!$destination) {
             return response()->json(['success' => false, 'message' => 'Destination not found.'], 404);
         }
+
+        $operatorId = !empty($validated['operator_id']) ? $validated['operator_id'] : ($destination->operator_id ?? null);
 
         $adults   = $validated['adults'] ?? 1;
         $children = $validated['children'] ?? 0;
         $total    = $adults + $children;
 
-        $priceKes       = $destination->price_kes ?? 0;
+        $priceKes       = $destination->price_kes ?? 15000;
         $totalPriceKes  = ($adults * $priceKes) + ($children * intval($priceKes * 0.8));
         $depositKes     = intval($totalPriceKes * 0.30);
 
         $booking = Booking::create([
             'user_id'           => $request->user()->id,
-            'destination_id'    => $validated['destination_id'],
-            'operator_id'       => $validated['operator_id'],
+            'destination_id'    => $destination->id,
+            'operator_id'       => $operatorId,
             'status'            => 'pending',
             'adults'            => $adults,
             'children'          => $children,

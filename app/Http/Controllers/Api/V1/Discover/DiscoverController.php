@@ -108,7 +108,9 @@ class DiscoverController extends Controller
                 'accommodations',
                 'tips',
             ])
-            ->where('slug', $slug)
+            ->where(function($q) use ($slug) {
+                $q->where('slug', $slug)->orWhere('id', $slug);
+            })
             ->where('is_active', true)
             ->firstOrFail();
 
@@ -137,7 +139,7 @@ class DiscoverController extends Controller
     public function similarDestinations(string $slug): JsonResponse
     {
         $data = $this->cache->rememberSimilar('destination', $slug, function () use ($slug) {
-            $destination = Destination::where('slug', $slug)->firstOrFail();
+            $destination = Destination::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
             $similar = Destination::where('category', $destination->category)
                 ->where('id', '!=', $destination->id)
                 ->where('is_active', true)

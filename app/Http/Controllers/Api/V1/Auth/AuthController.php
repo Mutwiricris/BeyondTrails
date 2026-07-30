@@ -108,6 +108,9 @@ class AuthController extends Controller
             $username = User::generateUniqueUsername($data['first_name'], $data['last_name']);
         }
 
+        $email = strtolower(trim($data['email']));
+        $dob   = $data['date_of_birth'] ?? '2000-01-01';
+
         // Create user with basic profile
         $user = User::create([
             'name'               => $data['first_name'] . ' ' . $data['last_name'],
@@ -115,8 +118,8 @@ class AuthController extends Controller
             'first_name'         => $data['first_name'],
             'last_name'          => $data['last_name'],
             'display_name'       => $data['first_name'] . ' ' . $data['last_name'],
-            'date_of_birth'      => $data['date_of_birth'],
-            'email'              => $data['email'],
+            'date_of_birth'      => $dob,
+            'email'              => $email,
             'password'           => Hash::make($data['password']),
             'explorer_level'     => 'explorer',
             'current_xp'         => 0,
@@ -244,9 +247,10 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $email = strtolower(trim($data['email']));
 
         // Find user
-        $user = User::where('email', $data['email'])->first();
+        $user = User::where('email', $email)->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([

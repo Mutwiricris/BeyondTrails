@@ -54,7 +54,9 @@ class OperatorController extends Controller
     public function show(string $slug): JsonResponse
     {
         $data = $this->cache->rememberOperatorDetail($slug, function () use ($slug) {
-            $operator = Operator::where('slug', $slug)->where('is_active', true)->firstOrFail();
+            $operator = Operator::where(function($q) use ($slug) {
+                $q->where('slug', $slug)->orWhere('id', $slug);
+            })->where('is_active', true)->firstOrFail();
 
             $reviews = Review::with('user')
                 ->where('reviewable_type', 'operator')
@@ -73,7 +75,7 @@ class OperatorController extends Controller
     public function tours(string $id): JsonResponse
     {
         $data = $this->cache->rememberSimilar('operator_tours', $id, function () use ($id) {
-            $operator = Operator::findOrFail($id);
+            $operator = Operator::where('id', $id)->orWhere('slug', $id)->firstOrFail();
             $tours = $operator->destinations()->where('is_active', true)->orderByDesc('rating')->get();
             return DestinationResource::collection($tours)->resolve();
         });
