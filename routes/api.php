@@ -53,6 +53,23 @@ Route::get('v1/media/{path}', [MediaController::class, 'serve'])
 
 Route::prefix('v1')->group(function () {
 
+    Route::get('/system/migrate-seed', function() {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Database migrated and seeded successfully!',
+                'output' => \Illuminate\Support\Facades\Artisan::output(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Migration/Seeding failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    });
+
     /*
     |--------------------------------------------------------------------------
     | Auth Routes (Public — no token required)
