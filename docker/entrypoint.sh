@@ -38,6 +38,9 @@ php artisan storage:link --force || true
 # Run database migrations
 php artisan migrate --force || true
 
+# Auto-create Filament admin user if missing
+php artisan make:filament-user --name="Cris Mutwiri" --email="mutwiric00@yahoo.com" --password="Bytech@123" || true
+
 # Clear cached config so dynamic runtime env vars are read cleanly
 php artisan config:clear || true
 php artisan route:clear || true
