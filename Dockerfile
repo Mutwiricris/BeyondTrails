@@ -56,6 +56,9 @@ RUN npm install --no-audit --no-fund \
 # Install Composer dependencies (ignoring platform reqs for smooth Docker build)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
+# Publish Filament CSS & JS assets to public directory
+RUN php artisan filament:assets || true
+
 # Copy Docker configuration files
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/nginx.conf /etc/nginx/nginx.conf

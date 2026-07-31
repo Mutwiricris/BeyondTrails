@@ -29,6 +29,9 @@ fi
 mkdir -p /app/storage/app/public /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/bootstrap/cache
 chmod -R 777 /app/storage /app/bootstrap/cache /app/database
 
+# Publish Filament CSS & JS assets to public directory
+php artisan filament:assets || true
+
 # Create storage symlink for uploaded media and avatars
 php artisan storage:link --force || true
 
