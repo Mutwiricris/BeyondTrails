@@ -16,10 +16,12 @@ use App\Http\Controllers\Api\V1\Discover\ChallengeController;
 use App\Http\Controllers\Api\V1\Discover\LocationHierarchyController;
 use App\Http\Controllers\Api\V1\Discover\GeofenceController;
 use App\Http\Controllers\Api\V1\Discover\ActivityController;
+use App\Http\Controllers\Api\V1\Discover\ActivityGameController;
 use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\MapLocationController;
 use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\Discover\OperatorBookingController;
+use App\Http\Controllers\Api\V1\NotificationController;
 
 // ── Root API Index & Health status ──────────────────────────────────────────
 Route::get('/', function () {
@@ -232,11 +234,18 @@ Route::prefix('v1')->group(function () {
         Route::get('/map-locations', [MapLocationController::class, 'index'])
             ->name('discover.map-locations.index');
 
-        // ── Activities ───────────────────────────────────────────────────────
+        // ── Activities & Interactive Games Mini-App ──────────────────────────
         Route::prefix('activities')->group(function () {
             Route::get('/', [ActivityController::class, 'index'])->name('discover.activities.index');
             Route::get('/{id}', [ActivityController::class, 'show'])->name('discover.activities.show');
             Route::get('/{id}/messages', [ActivityController::class, 'getMessages'])->name('discover.activities.messages.get');
+
+            Route::prefix('games')->group(function () {
+                Route::get('/metadata', [ActivityGameController::class, 'metadata'])->name('discover.activities.games.metadata');
+                Route::get('/packs', [ActivityGameController::class, 'index'])->name('discover.activities.games.packs.index');
+                Route::get('/packs/{idOrSlug}', [ActivityGameController::class, 'show'])->name('discover.activities.games.packs.show');
+                Route::post('/sessions', [ActivityGameController::class, 'storeSession'])->name('discover.activities.games.sessions.store');
+            });
         });
 
         // ── Stories ──────────────────────────────────────────────────────────
@@ -285,6 +294,17 @@ Route::prefix('v1')->group(function () {
             Route::get('/',       [DiscoverRouteController::class, 'index'])->name('discover.routes.index');
             Route::get('/{slug}', [DiscoverRouteController::class, 'show'])->name('discover.routes.show');
         });
+    });
+
+    // ── Notifications ─────────────────────────────────────────────────────────
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+        Route::get('/settings', [NotificationController::class, 'getSettings'])->name('notifications.settings.get');
+        Route::put('/settings', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
+        Route::post('/location-ping', [NotificationController::class, 'locationPing'])->name('notifications.location_ping');
     });
 
     /*

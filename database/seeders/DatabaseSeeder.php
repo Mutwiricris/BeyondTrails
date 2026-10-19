@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             DiscoverSeeder::class,
             ChallengesAndStoriesSeeder::class,
             ExplorersSeeder::class,
+            ActivityGameSeeder::class,
         ]);
         // User::factory(10)->create();
 
